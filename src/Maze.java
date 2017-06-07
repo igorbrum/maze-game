@@ -47,4 +47,10 @@ public class Maze {
 		door.setObj(obj);
 		return door;
 	}
+	public Key createKeys(int roomNumber, int color, GameObject obj){
+		Key key = new Key();
+		key.setRoomNumber(roomNumber);
+		key.setObj(obj);
+		return key;
+	}
 }
