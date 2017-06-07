@@ -2,8 +2,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
-import com.senac.SimpleJava.Console;
-
 public class Maze {
 	public Room room[] = new Room[32];
 	
@@ -35,12 +33,18 @@ public class Maze {
 	public Room randomInitialRoom() {
 		Room r = new Room();
 		int i = (int)(Math.random() * (31 - 0));
-		r = room[28];
+		r = room[i];
 		return r;
 	}
 	public Room callNextRoom(int i) {
 		Room r = new Room();
 		r = room[i];
 		return r;
+	}
+	public Door createDoor(int number, GameObject obj){
+		Door door = new Door();
+		door.setLeadTo(number);
+		door.setObj(obj);
+		return door;
 	}
 }
