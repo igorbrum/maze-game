@@ -63,24 +63,13 @@ public class Main extends GraphicApplication implements MouseObserver {
 		containerObject.draw(canvas);
 		canvas.putText(10, 0, 30, "Sala Numero: "+roomNumber);
 		
-		if (hasNorthDoor()) {
-			door[0].getObj().draw(canvas);
-		}
-		if (hasSouthDoor()) {
-			door[1].getObj().draw(canvas);
-		}
-		if (hasEastDoor()) {
-			door[2].getObj().draw(canvas);
-		}
-		if (hasWestDoor()) {
-			door[3].getObj().draw(canvas);
-		}
-		if (hasUpDoor()) {
-			door[4].getObj().draw(canvas);
-		}
-		if (hasDownDoor()) {
-			door[5].getObj().draw(canvas);
-		}
+		hasNorthDoor(canvas, 0);
+		hasSouthDoor(canvas, 1);
+		hasEastDoor(canvas, 2);
+		hasWestDoor(canvas, 3);
+		hasUpDoor(canvas, 4);
+		hasDownDoor(canvas, 5);
+		
 		for (int i = 0; i < key.length; i++) {
 			if (roomNumber == key[i].getRoomNumber() && key[i].isItemShow()) {
 				key[i].getObj().draw(canvas);
@@ -153,46 +142,41 @@ public class Main extends GraphicApplication implements MouseObserver {
 		k = maze.createKeys(randomRoomNumber, randomColor, keyObject[i], true);
 		return k;
 	}
-	private boolean hasNorthDoor(){
+	
+	private void hasNorthDoor(Canvas canvas, int i){
 		if (room.getNorthNumber() >= 0) {
-			door[0] = maze.createDoor(room.getNorthNumber(), doorObject[0]);
-			return true;
+			door[i] = maze.createDoor(room.getNorthNumber(), doorObject[i]);
+			door[i].getObj().draw(canvas);
 		}
-		return false;
 	}
-	private boolean hasSouthDoor(){
+	private void hasSouthDoor(Canvas canvas, int i){
 		if (room.getSouthNumber() >= 0) {
-			door[1] = maze.createDoor(room.getSouthNumber(), doorObject[1]);
-			return true;
+			door[i] = maze.createDoor(room.getSouthNumber(), doorObject[i]);
+			door[i].getObj().draw(canvas);
 		}
-		return false;
 	}
-	private boolean hasEastDoor(){
+	private void hasEastDoor(Canvas canvas, int i){
 		if (room.getEastNumber() >= 0) {
-			door[2] = maze.createDoor(room.getEastNumber(), doorObject[2]);
-			return true;
+			door[i] = maze.createDoor(room.getEastNumber(), doorObject[i]);
+			door[i].getObj().draw(canvas);
 		}
-		return false;
 	}
-	private boolean hasWestDoor(){
+	private void hasWestDoor(Canvas canvas, int i){
 		if (room.getWestNumber() >= 0) {
-			door[3] = maze.createDoor(room.getWestNumber(), doorObject[3]);
-			return true;
+			door[i] = maze.createDoor(room.getWestNumber(), doorObject[i]);
+			door[i].getObj().draw(canvas);
 		}
-		return false;
 	}
-	private boolean hasUpDoor(){
+	private void hasUpDoor(Canvas canvas, int i){
 		if (room.getUpNumber() >= 0) {
-			door[4] = maze.createDoor(room.getUpNumber(), doorObject[4]);
-			return true;
+			door[i] = maze.createDoor(room.getUpNumber(), doorObject[i]);
+			door[i].getObj().draw(canvas);
 		}
-		return false;
 	}
-	private boolean hasDownDoor(){
+	private void hasDownDoor(Canvas canvas, int i){
 		if (room.getDownNumber() >= 0) {
-			door[5] = maze.createDoor(room.getDownNumber(), doorObject[5]);
-			return true;
+			door[i] = maze.createDoor(room.getDownNumber(), doorObject[i]);
+			door[i].getObj().draw(canvas);
 		}
-		return false;
 	}
 }
