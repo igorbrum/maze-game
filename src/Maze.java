@@ -33,7 +33,7 @@ public class Maze {
 	public Room randomInitialRoom() {
 		Room r = new Room();
 		int i = (int)(Math.random() * (31 - 0));
-		r = room[i];
+		r = room[10];
 		return r;
 	}
 	public Room callNextRoom(int i) {
@@ -47,10 +47,11 @@ public class Maze {
 		door.setObj(obj);
 		return door;
 	}
-	public Key createKeys(int roomNumber, int color, GameObject obj){
+	public Key createKeys(int roomNumber, int color, GameObject obj, boolean show){
 		Key key = new Key();
 		key.setRoomNumber(roomNumber);
 		key.setObj(obj);
+		key.setItemShow(show);
 		return key;
 	}
 }

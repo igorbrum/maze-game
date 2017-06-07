@@ -1,7 +1,6 @@
-import java.util.Random;
-
 import com.senac.SimpleJava.Console;
 import com.senac.SimpleJava.Graphics.Canvas;
+import com.senac.SimpleJava.Graphics.Color;
 import com.senac.SimpleJava.Graphics.GraphicApplication;
 import com.senac.SimpleJava.Graphics.Image;
 import com.senac.SimpleJava.Graphics.Point;
@@ -21,13 +20,11 @@ public class Main extends GraphicApplication implements MouseObserver {
 	
 	@Override
 	protected void setup() {
-		Random randomKeyRoomNumber = new Random();
-		Random randomColorKey = new Random();
-		int randomRoomNumber = 0;
-		int randomColor = 0;
+		int randomRoomNumber;
+		int randomColor;
 		maze = new Maze();
 		room = new Room();
-		
+
 		//ARQUIVO QUE CONTEM A CONFIGURACAO DE SALAS DO LABIRINTO
 		pathToFileDungeonMap = "files/Labirinto.txt";
 		
@@ -42,30 +39,30 @@ public class Main extends GraphicApplication implements MouseObserver {
 		setResolution(Resolution.HIGHRES);
 		
 		//CRIACAO DO SPRITE DO HEROI
-		heroObject = GameObject.createObject(pathToFileHero, 375, 250);
+		heroObject = GameObject.createObject(pathToFileHero, 375, 250, Color.BLUE);
 		
 		//CRIACAO DE SPRITES DAS PORTAS E ESCADAS (A.K.A SAIDAS) NORTE-SUL-OESTE-LESTE-ACIMA-ABAIXO (NESTA ORDEM)
-		doorObject[0] = GameObject.createObject(pathToFileDoor, 368, 10);
-		doorObject[1] = GameObject.createObject(pathToFileDoor, 368, 522);
-		doorObject[2] = GameObject.createObject(pathToFileDoor, 647, 254);
-		doorObject[3] = GameObject.createObject(pathToFileDoor, 93, 254);
-		doorObject[4] = GameObject.createObject(pathToFileDoor, 470, 150);
-		doorObject[5] = GameObject.createObject(pathToFileDoor, 230, 415);
+		doorObject[0] = GameObject.createObject(pathToFileDoor, 368, 10, Color.BLUE);
+		doorObject[1] = GameObject.createObject(pathToFileDoor, 368, 522, Color.BLUE);
+		doorObject[2] = GameObject.createObject(pathToFileDoor, 647, 254, Color.BLUE);
+		doorObject[3] = GameObject.createObject(pathToFileDoor, 93, 254, Color.BLUE);
+		doorObject[4] = GameObject.createObject(pathToFileDoor, 470, 150, Color.BLUE);
+		doorObject[5] = GameObject.createObject(pathToFileDoor, 230, 415, Color.BLUE);
 		
 		//CRIACAO DE SPRITES DAS CHAVES
-		keyObject[0] = GameObject.createObject(pathToFileKey, 230, 145);
-		keyObject[1] = GameObject.createObject(pathToFileKey, 600, 200);
-		keyObject[2] = GameObject.createObject(pathToFileKey, 350, 350);
-		keyObject[3] = GameObject.createObject(pathToFileKey, 600, 400);
+		keyObject[0] = GameObject.createObject(pathToFileKey, 230, 145, Color.BLUE);
+		keyObject[1] = GameObject.createObject(pathToFileKey, 600, 200, Color.BLUE);
+		keyObject[2] = GameObject.createObject(pathToFileKey, 350, 350, Color.BLUE);
+		keyObject[3] = GameObject.createObject(pathToFileKey, 600, 400, Color.BLUE);
 		
 		//INICIA O LABIRINTO
 		maze.createMaze(pathToFileDungeonMap);
 		
 		//POSICAO ALEATORIA INICIAL DAS CHAVES 
 		for (int i = 0; i < 4; i++) {
-			randomRoomNumber = randomKeyRoomNumber.nextInt(31)+1;
-			randomColor = randomColorKey.nextInt(3)+1;
-			key[i] = maze.createKeys(randomRoomNumber, randomColor, keyObject[i]);
+			randomRoomNumber = (int)(Math.random()*(31-1));
+			randomColor = (int)(Math.random()*(3-0));
+			key[i] = maze.createKeys(randomRoomNumber, randomColor, keyObject[i], true);
 		}
 		
 		//SALA INICIAL DO LABIRINTO EM MODO ALEATORIO
@@ -86,6 +83,7 @@ public class Main extends GraphicApplication implements MouseObserver {
 
 		canvas.drawImage(background, 0, 0);
 		heroObject.draw(canvas);
+		
 		canvas.putText(10, 0, 30, "Sala Numero: "+roomNumber);
 		
 		if (room.getNorthNumber() >= 0) {
@@ -114,7 +112,7 @@ public class Main extends GraphicApplication implements MouseObserver {
 		}
 		
 		for (int i = 0; i < key.length; i++) {
-			if (roomNumber == key[i].getRoomNumber()) {
+			if (roomNumber == key[i].getRoomNumber() && key[i].isItemShow()) {
 				key[i].getObj().draw(canvas);
 			}
 		}
@@ -137,6 +135,14 @@ public class Main extends GraphicApplication implements MouseObserver {
 						redraw();
 					}
 				}
+			}
+		}
+		
+		//VERIFICACAO DO CLIQUE NA CHAVE
+		for (int i = 0; i < key.length; i++) {
+			if (key[i].getObj().clicked(p) && key[i].isItemShow()) {
+				key[i].setItemShow(false);
+				redraw();
 			}
 		}
 	}
