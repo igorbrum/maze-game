@@ -9,12 +9,12 @@ import com.senac.SimpleJava.Graphics.events.MouseEvent;
 import com.senac.SimpleJava.Graphics.events.MouseObserver;
 
 public class Main extends GraphicApplication implements MouseObserver {
-	public String pathToFileHero, pathToFileDoor, pathToBackground, pathToFileDungeonMap, pathToFileKey;
+	public String pathToFileHero, pathToFileDoor, pathToBackground, pathToFileDungeonMap, pathToFileKey, pathToFileContainer;
 	public GameObject doorObject[] = new GameObject[6];
 	public GameObject keyObject[] = new GameObject[4];
 	public Door door[] = new Door[6];
 	public Key key[] = new Key[4];
-	public GameObject heroObject;
+	public GameObject heroObject, containerObject;
 	public Maze maze;
 	public Room room;
 	
@@ -27,6 +27,7 @@ public class Main extends GraphicApplication implements MouseObserver {
 
 		//ARQUIVO QUE CONTEM A CONFIGURACAO DE SALAS DO LABIRINTO
 		pathToFileDungeonMap = "files/Labirinto.txt";
+		pathToFileContainer = "img/square.png";
 		
 		//IMAGENS USADAS NOS SPRITES
 		pathToFileHero = "img/hero-noitem.png";
@@ -39,6 +40,7 @@ public class Main extends GraphicApplication implements MouseObserver {
 		setResolution(Resolution.HIGHRES);
 		
 		//CRIACAO DO SPRITE DO HEROI
+		containerObject = GameObject.createObject(pathToFileContainer, 0, 525, Color.BLUE);
 		heroObject = GameObject.createObject(pathToFileHero, 375, 250, Color.BLUE);
 		
 		//CRIACAO DE SPRITES DAS PORTAS E ESCADAS (A.K.A SAIDAS) NORTE-SUL-OESTE-LESTE-ACIMA-ABAIXO (NESTA ORDEM)
@@ -60,7 +62,8 @@ public class Main extends GraphicApplication implements MouseObserver {
 		
 		//POSICAO ALEATORIA INICIAL DAS CHAVES 
 		for (int i = 0; i < 4; i++) {
-			randomRoomNumber = (int)(Math.random()*(31-1));
+			//randomRoomNumber = (int)(Math.random()*(31-1));
+			randomRoomNumber = 10;
 			randomColor = (int)(Math.random()*(3-0));
 			key[i] = maze.createKeys(randomRoomNumber, randomColor, keyObject[i], true);
 		}
@@ -83,7 +86,7 @@ public class Main extends GraphicApplication implements MouseObserver {
 
 		canvas.drawImage(background, 0, 0);
 		heroObject.draw(canvas);
-		
+		containerObject.draw(canvas);
 		canvas.putText(10, 0, 30, "Sala Numero: "+roomNumber);
 		
 		if (room.getNorthNumber() >= 0) {
@@ -142,6 +145,7 @@ public class Main extends GraphicApplication implements MouseObserver {
 		for (int i = 0; i < key.length; i++) {
 			if (key[i].getObj().clicked(p) && key[i].isItemShow()) {
 				key[i].setItemShow(false);
+				key[i].setItemTaked(true);
 				redraw();
 			}
 		}
