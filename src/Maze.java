@@ -11,7 +11,7 @@ public class Maze {
 			int i = 1;
 			while (fileToRead.hasNext()) {
 				String coordinates = fileToRead.nextLine();
-				room[i] = createRoom(coordinates);
+				room[i] = createListRoom(coordinates);
 				i++;
 			}
 			fileToRead.close();
@@ -21,20 +21,14 @@ public class Maze {
 			System.err.println("Erro interno do sistema");
 		}
 	}
-	public void createMaze(String pathToFile) {
-		String nameFile = pathToFile;
-		readFile(nameFile);
-	}
-	private Room createRoom(String coordinates) {
+	private Room createListRoom(String coordinates) {
 		Room r = new Room();
 		r.setRoomCoordinates(coordinates);
 		return r;
 	}
-	public Room randomInitialRoom() {
-		Room r = new Room();
-		int i = (int)(Math.random() * (31 - 0));
-		r = room[10];
-		return r;
+	public void createMaze(String pathToFile) {
+		String nameFile = pathToFile;
+		readFile(nameFile);
 	}
 	public Room callNextRoom(int i) {
 		Room r = new Room();

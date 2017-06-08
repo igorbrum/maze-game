@@ -20,7 +20,7 @@ public class GameObject extends Sprite implements Movable, Resizable {
 			e.printStackTrace();
 		}
 		object.setPosition(x, y);
-		object.setBackrgound(color);
+		//object.setBackrgound(color);
 		return object;
 	}
 	public boolean clicked(Point p) {

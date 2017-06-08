@@ -43,7 +43,7 @@ public class Main extends GraphicApplication implements MouseObserver {
 		}
 		
 		//SALA INICIAL DO LABIRINTO EM MODO ALEATORIO
-		room = maze.randomInitialRoom();
+		room = maze.callNextRoom((int)(Math.random()*(31-0)));
 
 		//MouseObserver PARA CAPTURAR O CLICK NA TELA
 		addMouseObserver(MouseEvent.CLICK, this);
