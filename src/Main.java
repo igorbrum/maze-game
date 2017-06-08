@@ -23,6 +23,7 @@ public class Main extends GraphicApplication implements MouseObserver {
 	protected void setup() {
 		maze = new Maze();
 		room = new Room();
+		int randomRoom = (int)(Math.random()*(31-0));
 		
 		//ARQUIVOS INICIAIS DE CONFIGURACAO
 		initialFiles();
@@ -43,7 +44,7 @@ public class Main extends GraphicApplication implements MouseObserver {
 		}
 		
 		//SALA INICIAL DO LABIRINTO EM MODO ALEATORIO
-		room = maze.callNextRoom((int)(Math.random()*(31-0)));
+		room = maze.callNextRoom(10);
 
 		//MouseObserver PARA CAPTURAR O CLICK NA TELA
 		addMouseObserver(MouseEvent.CLICK, this);
@@ -83,6 +84,21 @@ public class Main extends GraphicApplication implements MouseObserver {
 	@Override
 	public void notify(MouseEvent evento, int b, Point p) {
 		//VERIFICACAO DO CLIQUE NA PORTA
+		doorClicked(p);
+		//VERIFICACAO DO CLIQUE NO ITEM
+		itemClicked(p);
+		/**/
+	}
+	private void itemClicked(Point p) {
+		for (int i = 0; i < key.length; i++) {
+			if (key[i].getObj().clicked(p) && key[i].isItemShow()) {
+				key[i].setItemShow(false);
+				key[i].setItemTaked(true);
+				redraw();
+			}
+		}
+	}
+	private void doorClicked(Point p) {
 		for (int i = 0; i < door.length; i++) {
 			if (door[i] != null) {
 				if (door[i].getObj().clicked(p)) {
@@ -96,15 +112,8 @@ public class Main extends GraphicApplication implements MouseObserver {
 				}
 			}
 		}
-		//VERIFICACAO DO CLIQUE NA CHAVE
-		for (int i = 0; i < key.length; i++) {
-			if (key[i].getObj().clicked(p) && key[i].isItemShow()) {
-				key[i].setItemShow(false);
-				key[i].setItemTaked(true);
-				redraw();
-			}
-		}
 	}
+
 	// <-- CONFIGURACAO DO LABIRINTO -->
 	private void initialFiles() {
 		//ARQUIVO QUE CONTEM A CONFIGURACAO DE SALAS DO LABIRINTO
