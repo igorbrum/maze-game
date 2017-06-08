@@ -48,4 +48,11 @@ public class Maze {
 		key.setItemShow(show);
 		return key;
 	}
+	public Armor createArmor(int roomNumber, GameObject obj, boolean show) {
+		Armor armor = new Armor();
+		armor.setRoomNumber(roomNumber);
+		armor.setObj(obj);
+		armor.setItemShow(show);
+		return armor;
+	}
 }

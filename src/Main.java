@@ -16,10 +16,11 @@ public class Main extends GraphicApplication implements MouseObserver {
 	private GameObject armorObject[] = new GameObject[3];
 	private Door door[] = new Door[6];
 	private Key key[] = new Key[4];
+	private Item item[] = new Item[2];
+	private Armor armor[] = new Armor[3];
 	private GameObject heroObject, containerObject;
 	private Maze maze;
 	private Room room;
-	private Item item[] = new Item[2];
 	
 	@Override
 	protected void setup() {
@@ -43,6 +44,10 @@ public class Main extends GraphicApplication implements MouseObserver {
 		//POSICAO ALEATORIA INICIAL DAS CHAVES 
 		for (int i = 0; i < key.length; i++) {
 			key[i] = randomKeys(i);
+		}
+		//POSICAO ALEATORIA INICIAL DAS ARMADURAS
+		for (int i = 0; i < armor.length; i++) {
+			armor[i] = randomArmor(i);
 		}
 		
 		//SALA INICIAL DO LABIRINTO EM MODO ALEATORIO
@@ -73,13 +78,10 @@ public class Main extends GraphicApplication implements MouseObserver {
 		hasUpDoor(canvas, 4);
 		hasDownDoor(canvas, 5);
 		
-		for (int i = 0; i < key.length; i++) {
-			if (roomNumber == key[i].getRoomNumber() && key[i].isItemShow()) {
-				key[i].getObj().draw(canvas);
-			}
-		}
+		hasKey(canvas, roomNumber);
+		hasArmor(canvas, roomNumber);
 	}
-	
+
 	@Override
 	protected void loop() {}
 	
@@ -147,19 +149,13 @@ public class Main extends GraphicApplication implements MouseObserver {
 		keyObject[2] = GameObject.createObject(pathToFileKey, 350, 350, Color.BLUE);
 		keyObject[3] = GameObject.createObject(pathToFileKey, 600, 400, Color.BLUE);
 		//CRIACAO DE SPRITES DAS ARMADURAS
-		//armorObject[0] = GameObject.createObject(pathToArmorLeather, 0, 0, Color.BLUE);
-		//armorObject[1] = GameObject.createObject(pathToArmorChainMail, 0, 0, Color.BLUE);
-		//armorObject[2] = GameObject.createObject(pathToArmorMithril, 0, 0, Color.BLUE);
+		armorObject[0] = GameObject.createObject(pathToArmorLeather, 100, 100, Color.BLUE);
+		//armorObject[1] = GameObject.createObject(pathToArmorChainMail, 200, 200, Color.BLUE);
+		//armorObject[2] = GameObject.createObject(pathToArmorMithril, 300, 300, Color.BLUE);
+		//armorObject[0] = GameObject.createObject(pathToFileDoor, 100, 100, Color.BLUE);
+		armorObject[1] = GameObject.createObject(pathToFileDoor, 200, 200, Color.BLUE);
+		armorObject[2] = GameObject.createObject(pathToFileDoor, 300, 300, Color.BLUE);
 	}
-	protected Key randomKeys(int i) {
-		Key k = new Key();
-		//int randomRoomNumber = (int)(Math.random()*(31-1));
-		int randomRoomNumber = 10;
-		int randomColor = (int)(Math.random()*(3-0));
-		k = maze.createKeys(randomRoomNumber, randomColor, keyObject[i], true);
-		return k;
-	}
-	
 	private void hasNorthDoor(Canvas canvas, int i){
 		if (room.getNorthNumber() >= 0) {
 			door[i] = maze.createDoor(room.getNorthNumber(), doorObject[i]);
@@ -194,6 +190,35 @@ public class Main extends GraphicApplication implements MouseObserver {
 		if (room.getDownNumber() >= 0) {
 			door[i] = maze.createDoor(room.getDownNumber(), doorObject[i]);
 			door[i].getObj().draw(canvas);
+		}
+	}
+	private Key randomKeys(int i) {
+		Key k = new Key();
+		//int randomRoomNumber = (int)(Math.random()*(31-1));
+		int randomRoomNumber = 10;
+		int randomColor = (int)(Math.random()*(3-0));
+		k = maze.createKeys(randomRoomNumber, randomColor, keyObject[i], true);
+		return k;
+	}
+	private void hasKey(Canvas canvas, int roomNumber) {
+		for (int i = 0; i < key.length; i++) {
+			if (roomNumber == key[i].getRoomNumber() && key[i].isItemShow()) {
+				key[i].getObj().draw(canvas);
+			}
+		}
+	}
+	private Armor randomArmor(int i){
+		Armor a = new Armor();
+		//int randomRoomNumber = (int)(Math.random()*(31-1));
+		int randomRoomNumber = 10;
+		a = maze.createArmor(randomRoomNumber, armorObject[i], true);
+		return a;
+	}
+	private void hasArmor(Canvas canvas, int roomNumber) {
+		for (int i = 0; i < armor.length; i++) {
+			if (roomNumber == armor[i].getRoomNumber() && armor[i].isItemShow()) {
+				armor[i].getObj().draw(canvas);
+			}
 		}
 	}
 }

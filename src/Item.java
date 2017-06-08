@@ -3,6 +3,7 @@ public class Item {
 	
 	private boolean itemTaked;
 	private boolean itemShow;
+	private int roomNumber;
 	private GameObject obj;
 
 	public GameObject getObj() {
@@ -27,6 +28,12 @@ public class Item {
 
 	public void setItemTaked(boolean itemTaked) {
 		this.itemTaked = itemTaked;
+	}
+	public int getRoomNumber() {
+		return roomNumber;
+	}
+	public void setRoomNumber(int roomNumber) {
+		this.roomNumber = roomNumber;
 	}
 
 }
