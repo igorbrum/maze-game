@@ -9,15 +9,17 @@ import com.senac.SimpleJava.Graphics.events.MouseEvent;
 import com.senac.SimpleJava.Graphics.events.MouseObserver;
 
 public class Main extends GraphicApplication implements MouseObserver {
-	public String pathToFileHero, pathToFileDoor, pathToBackground, pathToFileDungeonMap, pathToFileKey, pathToFileContainer;
-	public GameObject doorObject[] = new GameObject[6];
-	public GameObject keyObject[] = new GameObject[4];
-	public Door door[] = new Door[6];
-	public Key key[] = new Key[4];
-	public GameObject heroObject, containerObject;
-	public Maze maze;
-	public Room room;
-	public Item item[] = new Item[2];
+	private String pathToFileHero, pathToFileDoor, pathToBackground, pathToFileDungeonMap, pathToFileKey, pathToFileContainer;
+	private String pathToArmorLeather, pathToArmorChainMail, pathToArmorMithril;
+	private GameObject doorObject[] = new GameObject[6];
+	private GameObject keyObject[] = new GameObject[4];
+	private GameObject armorObject[] = new GameObject[3];
+	private Door door[] = new Door[6];
+	private Key key[] = new Key[4];
+	private GameObject heroObject, containerObject;
+	private Maze maze;
+	private Room room;
+	private Item item[] = new Item[2];
 	
 	@Override
 	protected void setup() {
@@ -94,21 +96,20 @@ public class Main extends GraphicApplication implements MouseObserver {
 			if (key[i].getObj().clicked(p) && key[i].isItemShow()) {
 				key[i].setItemShow(false);
 				key[i].setItemTaked(true);
+				Console.println(key[i].getObj().getBounds(), " - chave:", i);
 				redraw();
 			}
 		}
 	}
 	private void doorClicked(Point p) {
 		for (int i = 0; i < door.length; i++) {
-			if (door[i] != null) {
-				if (door[i].getObj().clicked(p)) {
-					if (door[i].getLeadTo() == 0) {
-						Console.println("Você ganhou o jogo!");
-						System.exit(0);
-					} else {
-						room = maze.callNextRoom(door[i].getLeadTo());
-						redraw();
-					}
+			if (door[i] != null && door[i].getObj().clicked(p)) {
+				if (door[i].getLeadTo() == 0) {
+					Console.println("Você ganhou o jogo!");
+					System.exit(0);
+				} else {
+					room = maze.callNextRoom(door[i].getLeadTo());
+					redraw();
 				}
 			}
 		}
@@ -123,6 +124,9 @@ public class Main extends GraphicApplication implements MouseObserver {
 		pathToFileDoor = "img/dungeon-door.png";
 		pathToFileKey = "img/key.png";
 		pathToFileContainer = "img/square.png";
+		pathToArmorLeather = "img/armor-leather.png";
+		pathToArmorChainMail = "img/armor-chain.png";
+		pathToArmorMithril = "img/armor-mithril.png";
 	}
 	
 	// <-- LOGICA DO LABIRINTO -->
@@ -142,6 +146,10 @@ public class Main extends GraphicApplication implements MouseObserver {
 		keyObject[1] = GameObject.createObject(pathToFileKey, 600, 200, Color.BLUE);
 		keyObject[2] = GameObject.createObject(pathToFileKey, 350, 350, Color.BLUE);
 		keyObject[3] = GameObject.createObject(pathToFileKey, 600, 400, Color.BLUE);
+		//CRIACAO DE SPRITES DAS ARMADURAS
+		//armorObject[0] = GameObject.createObject(pathToArmorLeather, 0, 0, Color.BLUE);
+		//armorObject[1] = GameObject.createObject(pathToArmorChainMail, 0, 0, Color.BLUE);
+		//armorObject[2] = GameObject.createObject(pathToArmorMithril, 0, 0, Color.BLUE);
 	}
 	protected Key randomKeys(int i) {
 		Key k = new Key();
