@@ -11,7 +11,7 @@ import com.senac.SimpleJava.Graphics.events.MouseEvent;
 import com.senac.SimpleJava.Graphics.events.MouseObserver;
 
 public class Main extends GraphicApplication implements MouseObserver {
-	private String pathToFileHero, pathToFileDoor, pathToBackground, pathToFileDungeonMap, pathToFileKey, pathToFileContainer;
+	private String pathToFileHero, pathToFileDoor, pathToBackground, pathToFileDungeonMap, pathToFileKey;
 	private String pathToArmorLeather, pathToArmorChainMail, pathToArmorMithril;
 	private GameObject doorObject[] = new GameObject[6];
 	private GameObject keyObject[] = new GameObject[4];
@@ -24,14 +24,12 @@ public class Main extends GraphicApplication implements MouseObserver {
 	private Maze maze;
 	private Room room;
 	private String pathToFileContainerBackground;
-	private int countItems;
 	
 	@Override
 	protected void setup() {
 		maze = new Maze();
 		room = new Room();
 		int randomRoom = (int)(Math.random()*(31-0));
-		countItems = 0;
 		
 		//ARQUIVOS INICIAIS DE CONFIGURACAO
 		initialFiles();
@@ -105,8 +103,10 @@ public class Main extends GraphicApplication implements MouseObserver {
 	public void notify(MouseEvent evento, int b, Point p) {
 		//VERIFICACAO DO CLIQUE NA PORTA
 		doorClicked(p);
-		//VERIFICACAO DO CLIQUE NO ITEM
-		itemClicked(p);
+		//VERIFICACAO DO CLIQUE NA CHAVE
+		keyClicked(p);
+		//VERIFICACAO DO CLIQUE NA ARMADURA
+		armorClicked(p);
 	}
 	// <-- CONFIGURACAO DO LABIRINTO -->
 	private void initialFiles() {
@@ -118,14 +118,12 @@ public class Main extends GraphicApplication implements MouseObserver {
 		pathToFileContainerBackground = "img/square-container.png";
 		pathToFileDoor = "img/dungeon-door.png";
 		pathToFileKey = "img/key.png";
-		pathToFileContainer = "img/square.png";
 		pathToArmorLeather = "img/armor-leather.png";
 		pathToArmorChainMail = "img/armor-chain.png";
 		pathToArmorMithril = "img/armor-mithril.png";
 	}
 	private void createObjects(){
 		//CRIACAO DO SPRITE DO HEROI
-		//containerObject = GameObject.createObject(pathToFileContainer, 0, 525, Color.BLUE);
 		heroObject = GameObject.createObject(pathToFileHero, 375, 250, Color.BLUE);
 		//CRIACAO DE SPRITES DAS PORTAS E ESCADAS (A.K.A SAIDAS) NORTE-SUL-OESTE-LESTE-ACIMA-ABAIXO (NESTA ORDEM)
 		doorObject[0] = GameObject.createObject(pathToFileDoor, 368, 10, Color.BLUE);
@@ -143,9 +141,6 @@ public class Main extends GraphicApplication implements MouseObserver {
 		//armorObject[1] = GameObject.createObject(pathToArmorChainMail, 200, 200, Color.BLUE);
 		//armorObject[2] = GameObject.createObject(pathToArmorMithril, 300, 300, Color.BLUE);
 		//armorObject[0] = GameObject.createObject(pathToFileDoor, 100, 100, Color.BLUE);
-		armorObject[0] = GameObject.createObject(pathToFileDoor, 100, 100, Color.BLUE);
-		armorObject[1] = GameObject.createObject(pathToFileDoor, 200, 200, Color.BLUE);
-		armorObject[2] = GameObject.createObject(pathToFileDoor, 300, 300, Color.BLUE);
 	}
 	
 	// <-- LOGICA DO LABIRINTO -->
@@ -187,8 +182,7 @@ public class Main extends GraphicApplication implements MouseObserver {
 	}
 	private Key randomKeys(int i) {
 		Key k = new Key();
-		//int randomRoomNumber = (int)(Math.random()*(31-1));
-		int randomRoomNumber = 10;
+		int randomRoomNumber = (int)(Math.random()*(31-1));
 		int randomColor = (int)(Math.random()*(3-0));
 		k = maze.createKeys(randomRoomNumber, randomColor, keyObject[i], true);
 		return k;
@@ -202,8 +196,7 @@ public class Main extends GraphicApplication implements MouseObserver {
 	}
 	private Armor randomArmor(int i){
 		Armor a = new Armor();
-		//int randomRoomNumber = (int)(Math.random()*(31-1));
-		int randomRoomNumber = 10;
+		int randomRoomNumber = (int)(Math.random()*(31-1));
 		a = maze.createArmor(randomRoomNumber, armorObject[i], true);
 		return a;
 	}
@@ -221,41 +214,21 @@ public class Main extends GraphicApplication implements MouseObserver {
 			}
 		}
 	}
-	private boolean inventoryHero(GameObject obj){
-		if (countItems == 0) {
-			item[0] = maze.createItem(obj, true);
-			item[0].getObj().setPosition(58, 550);
-			redraw();
-			return true;
-		}
-		if (countItems == 1) {
-			item[0] = maze.createItem(obj, true);
-			item[0].getObj().setPosition(150, 550);
-			redraw();
-			return true;
-		}
-		return false;
-	}
-	private void itemClicked(Point p) {
-		if (countItems >= 0 && countItems <= 1) {
-			keyClicked(p);
-			armorClicked(p);
-			countItems++;
-		} else {
-			Console.println("Inventory is full!", countItems);
-		}
-	}
 	private void keyClicked(Point p) {
 		for (int i = 0; i < key.length; i++) {
 			if (key[i].getObj().clicked(p) && key[i].isItemShow()) {
-				inventoryHero(key[i].getObj());
+				key[i].setItemShow(false);
+				key[i].setItemTaked(false);
+				redraw();
 			}
 		}
 	}
 	private void armorClicked(Point p) {
 		for (int i = 0; i < armor.length; i++) {
 			if (armor[i].getObj().clicked(p) && armor[i].isItemShow()) {
-				inventoryHero(armor[i].getObj());
+				armor[i].setItemShow(false);
+				armor[i].setItemTaked(false);
+				redraw();
 			}
 		}
 	}
