@@ -54,11 +54,28 @@ public class Maze {
 		key.setItemShow(show);
 		return key;
 	}
-	public Armor createArmor(int roomNumber, GameObject obj, boolean show) {
+	public Armor createArmor(int roomNumber, String typeArmor, GameObject obj, boolean show) {
 		Armor armor = new Armor();
+		if (typeArmor.toLowerCase().equals("leathermail")) {
+			armor.setArmorClass(2);
+		}
+		if (typeArmor.toLowerCase().equals("chainmail")) {
+			armor.setArmorClass(3);
+		}
+		if (typeArmor.toLowerCase().equals("mithrilmail")) {
+			armor.setArmorClass(3);
+		}
 		armor.setRoomNumber(roomNumber);
 		armor.setObj(obj);
 		armor.setItemShow(show);
 		return armor;
+	}
+	public Weapon createWeapon(int randomRoomNumber, String typeWeapon, GameObject obj, boolean show) {
+		Weapon weapon = new Weapon();
+		if (typeWeapon.toLowerCase().equals("dagger")) {
+			
+		}
+		weapon.setTypeWeapon(typeWeapon);
+		return weapon;
 	}
 }

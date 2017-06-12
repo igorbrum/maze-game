@@ -11,11 +11,11 @@ public class GameObject extends Sprite implements Movable, Resizable {
 	private static GameObject object;
 
 	public GameObject(String filename, Color background) throws IOException {
-		super(filename, background);
+		super(filename);
 	}
-	public static GameObject createObject(String pathToImg, int x, int y, Color background){
+	public static GameObject createObject(String pathToFile, int x, int y, Color background){
 		try {
-			object = new GameObject(pathToImg, background);
+			object = new GameObject(pathToFile, background);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

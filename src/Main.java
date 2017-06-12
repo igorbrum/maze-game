@@ -11,26 +11,39 @@ import com.senac.SimpleJava.Graphics.events.MouseEvent;
 import com.senac.SimpleJava.Graphics.events.MouseObserver;
 
 public class Main extends GraphicApplication implements MouseObserver {
-	private String pathToFileHero, pathToFileDoor, pathToBackground, pathToFileDungeonMap, pathToFileKey;
+	private String pathToFileHero, pathToFileDoor, pathToBackground, pathToFileDungeonMap, pathToFileKey, pathToFileContainerBackground;
 	private String pathToArmorLeather, pathToArmorChainMail, pathToArmorMithril;
+	private String pathToFileWeaponDagger, pathToFileWeaponKnife, pathToFileWeaponLongSword, pathToFileWeaponShortSword;
 	private GameObject doorObject[] = new GameObject[6];
 	private GameObject keyObject[] = new GameObject[4];
 	private GameObject armorObject[] = new GameObject[3];
+	private GameObject weaponObject[] = new GameObject[4];
 	private Door door[] = new Door[6];
 	private Key key[] = new Key[4];
 	private Item item[] = new Item[2];
 	private Armor armor[] = new Armor[3];
+	private Weapon weapon[] = new Weapon[4];
 	private GameObject heroObject;
 	private Maze maze;
 	private Room room;
-	private String pathToFileContainerBackground;
+	private int countItem = 0;
+	private int countArmor = 0;
 	
 	@Override
 	protected void setup() {
 		maze = new Maze();
 		room = new Room();
-		int randomRoom = (int)(Math.random()*(31-0));
+		String typeArmor[] = new String [3];
+		String typeWeapon[] = new String [4];
 		
+		typeArmor[0] = "leatherMail";
+		typeArmor[1] = "chainMail";
+		typeArmor[2] = "mithrilMail";
+		
+		typeArmor[0] = "dagger";
+		typeArmor[1] = "knife";
+		typeArmor[2] = "shortsword";
+		typeArmor[3] = "longsword";
 		//ARQUIVOS INICIAIS DE CONFIGURACAO
 		initialFiles();
 		
@@ -50,16 +63,20 @@ public class Main extends GraphicApplication implements MouseObserver {
 		}
 		//POSICAO ALEATORIA INICIAL DAS ARMADURAS
 		for (int i = 0; i < armor.length; i++) {
-			armor[i] = randomArmor(i);
+			armor[i] = randomArmor(i, typeArmor[i]);
+		}
+		//POSICAO ALEATORIA INICIAL DAS ARMAS
+		for (int i = 0; i < weapon.length; i++) {
+			weapon[i] = randomWeapon(i, typeWeapon[i]);
 		}
 		
 		//SALA INICIAL DO LABIRINTO EM MODO ALEATORIO
+		//room = maze.callNextRoom((int)(Math.random()*(31-0)));
 		room = maze.callNextRoom(10);
 
 		//MouseObserver PARA CAPTURAR O CLICK NA TELA
 		addMouseObserver(MouseEvent.CLICK, this);
 	}
-
 	@Override
 	protected void draw(Canvas canvas) {
 		canvas.clear();
@@ -86,16 +103,6 @@ public class Main extends GraphicApplication implements MouseObserver {
 		hasArmor(canvas, roomNumber);
 	}
 
-	private Image setBackgroundContainer(String pathToFile) {
-		try {
-			Image backgroundContainer = new Image(pathToFile);
-			return backgroundContainer;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-
 	@Override
 	protected void loop() {}
 	
@@ -103,10 +110,14 @@ public class Main extends GraphicApplication implements MouseObserver {
 	public void notify(MouseEvent evento, int b, Point p) {
 		//VERIFICACAO DO CLIQUE NA PORTA
 		doorClicked(p);
-		//VERIFICACAO DO CLIQUE NA CHAVE
-		keyClicked(p);
-		//VERIFICACAO DO CLIQUE NA ARMADURA
-		armorClicked(p);
+		if (countItem >= 0 && countItem <= 2) {
+			//VERIFICACAO DO CLIQUE NA CHAVE
+			keyClicked(p);
+			//VERIFICACAO DO CLIQUE NA ARMADURA
+			armorClicked(p);
+		} else {
+			Console.println("Inventorio Cheio");
+		}
 	}
 	// <-- CONFIGURACAO DO LABIRINTO -->
 	private void initialFiles() {
@@ -117,14 +128,20 @@ public class Main extends GraphicApplication implements MouseObserver {
 		pathToFileHero = "img/hero-noitem.png";
 		pathToFileContainerBackground = "img/square-container.png";
 		pathToFileDoor = "img/dungeon-door.png";
-		pathToFileKey = "img/key.png";
+		pathToFileKey = "img/item-key.png";
+		//IMAGENS USADAS NOS SPRITES DE ARMADURA
 		pathToArmorLeather = "img/armor-leather.png";
-		pathToArmorChainMail = "img/armor-chain.png";
+		pathToArmorChainMail = "img/armor-chainmail.png";
 		pathToArmorMithril = "img/armor-mithril.png";
+		//IMAGENS USADAS NOS SPRITES DE ARMAS
+		pathToFileWeaponDagger = "img/weapon-dagger.png";
+		pathToFileWeaponKnife = "img/weapon-knife.png";
+		pathToFileWeaponShortSword = "img/weapon-shortsword.png";
+		pathToFileWeaponLongSword = "img/weapon-longsword.png";
 	}
 	private void createObjects(){
 		//CRIACAO DO SPRITE DO HEROI
-		heroObject = GameObject.createObject(pathToFileHero, 375, 250, Color.BLUE);
+		heroObject = GameObject.createObject(pathToFileHero, 375, 250, Color.GREEN);
 		//CRIACAO DE SPRITES DAS PORTAS E ESCADAS (A.K.A SAIDAS) NORTE-SUL-OESTE-LESTE-ACIMA-ABAIXO (NESTA ORDEM)
 		doorObject[0] = GameObject.createObject(pathToFileDoor, 368, 10, Color.BLUE);
 		doorObject[1] = GameObject.createObject(pathToFileDoor, 368, 522, Color.BLUE);
@@ -138,9 +155,23 @@ public class Main extends GraphicApplication implements MouseObserver {
 		keyObject[2] = GameObject.createObject(pathToFileKey, 350, 350, Color.BLUE);
 		keyObject[3] = GameObject.createObject(pathToFileKey, 600, 400, Color.BLUE);
 		//CRIACAO DE SPRITES DAS ARMADURAS
-		//armorObject[1] = GameObject.createObject(pathToArmorChainMail, 200, 200, Color.BLUE);
-		//armorObject[2] = GameObject.createObject(pathToArmorMithril, 300, 300, Color.BLUE);
-		//armorObject[0] = GameObject.createObject(pathToFileDoor, 100, 100, Color.BLUE);
+		armorObject[0] = GameObject.createObject(pathToArmorLeather, 250, 155, Color.BLUE);
+		armorObject[1] = GameObject.createObject(pathToArmorChainMail, 550, 250, Color.BLUE);
+		armorObject[2] = GameObject.createObject(pathToArmorMithril, 250, 250, Color.BLUE);
+		//CRIACAO DE SPRITES DAS ARMAS
+		weaponObject[0] = GameObject.createObject(pathToFileWeaponDagger, 300, 175, Color.RED);
+		weaponObject[1] = GameObject.createObject(pathToFileWeaponKnife, 380, 175, Color.BLUE);
+		weaponObject[2] = GameObject.createObject(pathToFileWeaponShortSword, 480, 175, Color.BLUE);
+		weaponObject[3] = GameObject.createObject(pathToFileWeaponLongSword, 580, 175, Color.BLUE);
+	}
+	private Image setBackgroundContainer(String pathToFile) {
+		try {
+			Image backgroundContainer = new Image(pathToFile);
+			return backgroundContainer;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 	// <-- LOGICA DO LABIRINTO -->
@@ -194,10 +225,11 @@ public class Main extends GraphicApplication implements MouseObserver {
 			}
 		}
 	}
-	private Armor randomArmor(int i){
+	private Armor randomArmor(int i, String typeArmor){
 		Armor a = new Armor();
-		int randomRoomNumber = (int)(Math.random()*(31-1));
-		a = maze.createArmor(randomRoomNumber, armorObject[i], true);
+		//int randomRoomNumber = (int)(Math.random()*(31-1));
+		int randomRoomNumber = 10;
+		a = maze.createArmor(randomRoomNumber, typeArmor, armorObject[i], true);
 		return a;
 	}
 	private void hasArmor(Canvas canvas, int roomNumber) {
@@ -206,6 +238,12 @@ public class Main extends GraphicApplication implements MouseObserver {
 				armor[i].getObj().draw(canvas);
 			}
 		}
+	}
+	private Weapon randomWeapon(int i, String typeArmor) {
+		Weapon w = new Weapon();
+		int randomRoomNumber = 10;
+		w = maze.createWeapon(randomRoomNumber, typeArmor, weaponObject[i], true);
+		return w;
 	}
 	private void hasItem(Canvas canvas) {
 		for (int i = 0; i < item.length; i++) {
@@ -219,16 +257,26 @@ public class Main extends GraphicApplication implements MouseObserver {
 			if (key[i].getObj().clicked(p) && key[i].isItemShow()) {
 				key[i].setItemShow(false);
 				key[i].setItemTaked(false);
+				countItem++;
 				redraw();
 			}
 		}
 	}
 	private void armorClicked(Point p) {
 		for (int i = 0; i < armor.length; i++) {
-			if (armor[i].getObj().clicked(p) && armor[i].isItemShow()) {
-				armor[i].setItemShow(false);
-				armor[i].setItemTaked(false);
-				redraw();
+			if (armor[i].getObj().clicked(p) && !armor[i].isItemTaked()) {
+				armor[i].setItemTaked(true);
+				countItem++;
+				if (countItem == 1 && countArmor == 0) { //SLOT UM
+					armor[i].getObj().setPosition(60, 530);
+					countArmor++;
+					redraw();
+				}
+				if (countItem == 2 && countArmor == 0) { //SLOT DOIS
+					armor[i].getObj().setPosition(80, 530);
+					countArmor++;
+					redraw();
+				}
 			}
 		}
 	}
