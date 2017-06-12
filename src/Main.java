@@ -1,7 +1,5 @@
 import java.io.IOException;
 
-import javax.swing.event.ChangeEvent;
-
 import com.senac.SimpleJava.Console;
 import com.senac.SimpleJava.Graphics.Canvas;
 import com.senac.SimpleJava.Graphics.Color;
@@ -87,8 +85,7 @@ public class Main extends GraphicApplication implements MouseObserver {
 		}
 		
 		//SALA INICIAL DO LABIRINTO EM MODO ALEATORIO
-		//room = maze.callNextRoom((int)(Math.random()*(31-0)));
-		room = maze.callNextRoom(10);
+		room = maze.callNextRoom((int)(Math.random()*(31-0)));
 
 		//MouseObserver PARA CAPTURAR O CLICK NA TELA
 		addMouseObserver(MouseEvent.CLICK, this);
@@ -107,13 +104,14 @@ public class Main extends GraphicApplication implements MouseObserver {
 		heroObject.draw(canvas);
 		canvas.putText(10, 0, 30, "Sala Numero: "+roomNumber);
 		
+		//DESENHA PORTAS QUANDO A CONFIGURACAO DA SALA PERMITE ISSO
 		hasNorthDoor(canvas, 0);
 		hasSouthDoor(canvas, 1);
 		hasEastDoor(canvas, 2);
 		hasWestDoor(canvas, 3);
 		hasUpDoor(canvas, 4);
 		hasDownDoor(canvas, 5);
-		
+		//DESENHA OS ITENS QUANDO A CONFIGURACAO DA SALA PERMITE ISSO
 		hasItem(canvas);
 		hasKey(canvas, roomNumber);
 		hasArmor(canvas, roomNumber);
@@ -212,30 +210,45 @@ public class Main extends GraphicApplication implements MouseObserver {
 		if (room.getSouthNumber() >= 0) {
 			door[i] = maze.createDoor(room.getSouthNumber(), doorObject[i], 10);
 			door[i].getObj().draw(canvas);
+			if (hasEnemy(canvas, door[i].getChangeEnemy(), (int)door[i].getObj().getPosition().x, (int)door[i].getObj().getPosition().y)) {
+				door[i].setEnemyAlive(true);
+			}
 		}
 	}
 	private void hasEastDoor(Canvas canvas, int i){
 		if (room.getEastNumber() >= 0) {
 			door[i] = maze.createDoor(room.getEastNumber(), doorObject[i], 10);
 			door[i].getObj().draw(canvas);
+			if (hasEnemy(canvas, door[i].getChangeEnemy(), (int)door[i].getObj().getPosition().x, (int)door[i].getObj().getPosition().y)) {
+				door[i].setEnemyAlive(true);
+			}
 		}
 	}
 	private void hasWestDoor(Canvas canvas, int i){
 		if (room.getWestNumber() >= 0) {
 			door[i] = maze.createDoor(room.getWestNumber(), doorObject[i], 10);
 			door[i].getObj().draw(canvas);
+			if (hasEnemy(canvas, door[i].getChangeEnemy(), (int)door[i].getObj().getPosition().x, (int)door[i].getObj().getPosition().y)) {
+				door[i].setEnemyAlive(true);
+			}
 		}
 	}
 	private void hasUpDoor(Canvas canvas, int i){
 		if (room.getUpNumber() >= 0) {
 			door[i] = maze.createDoor(room.getUpNumber(), doorObject[i], 10);
 			door[i].getObj().draw(canvas);
+			if (hasEnemy(canvas, door[i].getChangeEnemy(), (int)door[i].getObj().getPosition().x, (int)door[i].getObj().getPosition().y)) {
+				door[i].setEnemyAlive(true);
+			}
 		}
 	}
 	private void hasDownDoor(Canvas canvas, int i){
 		if (room.getDownNumber() >= 0) {
 			door[i] = maze.createDoor(room.getDownNumber(), doorObject[i], 10);
 			door[i].getObj().draw(canvas);
+			if (hasEnemy(canvas, door[i].getChangeEnemy(), (int)door[i].getObj().getPosition().x, (int)door[i].getObj().getPosition().y)) {
+				door[i].setEnemyAlive(true);
+			}
 		}
 	}
 	private Key randomKeys(int i) {
@@ -291,8 +304,9 @@ public class Main extends GraphicApplication implements MouseObserver {
 	}
 	private boolean hasEnemy(Canvas canvas, double chance, int x, int y){
 		int chanceEnemy = (int)(Math.random()*(100-0));
+		Console.println("Chance enemy:", chanceEnemy);
 		int enemySelected = (int)(Math.random()*(2-0));
-		if (chanceEnemy >= chance) {
+		if (chance >= chanceEnemy) {
 			enemy[enemySelected].getObj().setPosition(x, y);
 			enemy[enemySelected].getObj().draw(canvas);
 			return true;
