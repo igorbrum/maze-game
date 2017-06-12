@@ -1,5 +1,7 @@
 import java.io.IOException;
 
+import javax.swing.event.ChangeEvent;
+
 import com.senac.SimpleJava.Console;
 import com.senac.SimpleJava.Graphics.Canvas;
 import com.senac.SimpleJava.Graphics.Color;
@@ -14,15 +16,18 @@ public class Main extends GraphicApplication implements MouseObserver {
 	private String pathToFileHero, pathToFileDoor, pathToBackground, pathToFileDungeonMap, pathToFileKey, pathToFileContainerBackground;
 	private String pathToArmorLeather, pathToArmorChainMail, pathToArmorMithril;
 	private String pathToFileWeaponDagger, pathToFileWeaponKnife, pathToFileWeaponLongSword, pathToFileWeaponShortSword;
+	private String pathToFileEnemyGoblin, pathToFileEnemyOrc, pathToFileEnemyTroll;
 	private GameObject doorObject[] = new GameObject[6];
 	private GameObject keyObject[] = new GameObject[4];
 	private GameObject armorObject[] = new GameObject[3];
 	private GameObject weaponObject[] = new GameObject[4];
+	private GameObject enemyObject[] = new GameObject[3];
 	private Door door[] = new Door[6];
 	private Key key[] = new Key[4];
 	private Item item[] = new Item[2];
 	private Armor armor[] = new Armor[3];
 	private Weapon weapon[] = new Weapon[4];
+	private Enemy enemy[] = new Enemy[3];
 	private GameObject heroObject;
 	private Maze maze;
 	private Room room;
@@ -30,12 +35,14 @@ public class Main extends GraphicApplication implements MouseObserver {
 	private int countArmor = 0;
 	private int countWeapon;
 	
+	// <-- GAME CORE -->
 	@Override
 	protected void setup() {
 		maze = new Maze();
 		room = new Room();
 		String typeArmor[] = new String [3];
 		String typeWeapon[] = new String [4];
+		String typeEnemy[] = new String [3];
 		
 		typeArmor[0] = "leatherMail";
 		typeArmor[1] = "chainMail";
@@ -45,6 +52,10 @@ public class Main extends GraphicApplication implements MouseObserver {
 		typeWeapon[1] = "knife";
 		typeWeapon[2] = "shortsword";
 		typeWeapon[3] = "longsword";
+		
+		typeEnemy[0] = "goblin";
+		typeEnemy[1] = "orc";
+		typeEnemy[2] = "troll";
 		//ARQUIVOS INICIAIS DE CONFIGURACAO
 		initialFiles();
 		
@@ -69,6 +80,10 @@ public class Main extends GraphicApplication implements MouseObserver {
 		//POSICAO ALEATORIA INICIAL DAS ARMAS
 		for (int i = 0; i < weapon.length; i++) {
 			weapon[i] = randomWeapon(i, typeWeapon[i]);
+		}
+		//CRIACAO DOS INIMIGOS
+		for (int i = 0; i < enemy.length; i++) {
+			enemy[i] = randomEnemy(i, typeEnemy[i]);
 		}
 		
 		//SALA INICIAL DO LABIRINTO EM MODO ALEATORIO
@@ -104,10 +119,8 @@ public class Main extends GraphicApplication implements MouseObserver {
 		hasArmor(canvas, roomNumber);
 		hasWeapon(canvas, roomNumber);
 	}
-
 	@Override
 	protected void loop() {}
-	
 	@Override
 	public void notify(MouseEvent evento, int b, Point p) {
 		//VERIFICACAO DO CLIQUE NA PORTA
@@ -118,7 +131,10 @@ public class Main extends GraphicApplication implements MouseObserver {
 		armorClicked(p);
 		//VERIFICACAO DO CLIQUE NA ARMA
 		weaponClicked(p);
+		
+		enemyClicked(p);
 	}
+	
 	// <-- CONFIGURACAO DO LABIRINTO -->
 	private void initialFiles() {
 		//ARQUIVO QUE CONTEM A CONFIGURACAO DE SALAS DO LABIRINTO
@@ -138,6 +154,10 @@ public class Main extends GraphicApplication implements MouseObserver {
 		pathToFileWeaponKnife = "img/weapon-knife.png";
 		pathToFileWeaponShortSword = "img/weapon-shortsword.png";
 		pathToFileWeaponLongSword = "img/weapon-longsword.png";
+		//IMAGENS USADAS NOS SPRITES DE INIMIGOS
+		pathToFileEnemyGoblin = "img/enemy-goblin.png";
+		pathToFileEnemyOrc = "img/enemy-orc.png";
+		pathToFileEnemyTroll = "img/enemy-troll.png";
 	}
 	private void createObjects(){
 		//CRIACAO DO SPRITE DO HEROI
@@ -163,6 +183,10 @@ public class Main extends GraphicApplication implements MouseObserver {
 		weaponObject[1] = GameObject.createObject(pathToFileWeaponKnife, 350, 475, Color.BLUE);
 		weaponObject[2] = GameObject.createObject(pathToFileWeaponShortSword, 400, 475, Color.BLUE);
 		weaponObject[3] = GameObject.createObject(pathToFileWeaponLongSword, 450, 475, Color.BLUE);
+		//CRIACAO DE SPRITES DOS INIMIGOS
+		enemyObject[0] = GameObject.createObject(pathToFileEnemyGoblin, 0, 0, Color.BLUE);
+		enemyObject[1] = GameObject.createObject(pathToFileEnemyOrc, 0, 0, Color.BLUE);
+		enemyObject[2] = GameObject.createObject(pathToFileEnemyTroll, 0, 0, Color.BLUE);
 	}
 	private Image setBackgroundContainer(String pathToFile) {
 		try {
@@ -177,37 +201,40 @@ public class Main extends GraphicApplication implements MouseObserver {
 	// <-- LOGICA DO LABIRINTO -->
 	private void hasNorthDoor(Canvas canvas, int i){
 		if (room.getNorthNumber() >= 0) {
-			door[i] = maze.createDoor(room.getNorthNumber(), doorObject[i]);
+			door[i] = maze.createDoor(room.getNorthNumber(), doorObject[i], 0.10);
 			door[i].getObj().draw(canvas);
+			if (hasEnemy(canvas, door[i].getChangeEnemy(), (int)door[i].getObj().getPosition().x, (int)door[i].getObj().getPosition().y)) {
+				door[i].setEnemyAlive(true);
+			}
 		}
 	}
 	private void hasSouthDoor(Canvas canvas, int i){
 		if (room.getSouthNumber() >= 0) {
-			door[i] = maze.createDoor(room.getSouthNumber(), doorObject[i]);
+			door[i] = maze.createDoor(room.getSouthNumber(), doorObject[i], 10);
 			door[i].getObj().draw(canvas);
 		}
 	}
 	private void hasEastDoor(Canvas canvas, int i){
 		if (room.getEastNumber() >= 0) {
-			door[i] = maze.createDoor(room.getEastNumber(), doorObject[i]);
+			door[i] = maze.createDoor(room.getEastNumber(), doorObject[i], 10);
 			door[i].getObj().draw(canvas);
 		}
 	}
 	private void hasWestDoor(Canvas canvas, int i){
 		if (room.getWestNumber() >= 0) {
-			door[i] = maze.createDoor(room.getWestNumber(), doorObject[i]);
+			door[i] = maze.createDoor(room.getWestNumber(), doorObject[i], 10);
 			door[i].getObj().draw(canvas);
 		}
 	}
 	private void hasUpDoor(Canvas canvas, int i){
 		if (room.getUpNumber() >= 0) {
-			door[i] = maze.createDoor(room.getUpNumber(), doorObject[i]);
+			door[i] = maze.createDoor(room.getUpNumber(), doorObject[i], 10);
 			door[i].getObj().draw(canvas);
 		}
 	}
 	private void hasDownDoor(Canvas canvas, int i){
 		if (room.getDownNumber() >= 0) {
-			door[i] = maze.createDoor(room.getDownNumber(), doorObject[i]);
+			door[i] = maze.createDoor(room.getDownNumber(), doorObject[i], 10);
 			door[i].getObj().draw(canvas);
 		}
 	}
@@ -227,8 +254,7 @@ public class Main extends GraphicApplication implements MouseObserver {
 	}
 	private Armor randomArmor(int i, String typeArmor){
 		Armor a = new Armor();
-		//int randomRoomNumber = (int)(Math.random()*(31-1));
-		int randomRoomNumber = 10;
+		int randomRoomNumber = (int)(Math.random()*(31-1));
 		a = maze.createArmor(randomRoomNumber, typeArmor, armorObject[i], true);
 		return a;
 	}
@@ -244,8 +270,7 @@ public class Main extends GraphicApplication implements MouseObserver {
 	}
 	private Weapon randomWeapon(int i, String typeArmor) {
 		Weapon w = new Weapon();
-		//int randomRoomNumber = (int)(Math.random()*(31-1));
-		int randomRoomNumber = 10;
+		int randomRoomNumber = (int)(Math.random()*(31-1));
 		w = maze.createWeapon(randomRoomNumber, typeArmor, weaponObject[i], true);
 		return w;
 	}
@@ -258,6 +283,21 @@ public class Main extends GraphicApplication implements MouseObserver {
 				weapon[i].getObj().draw(canvas);
 			}
 		}
+	}
+	private Enemy randomEnemy(int i, String string) {
+		Enemy e = new Enemy();
+		e = maze.createEnemy(string, enemyObject[i]);
+		return e;
+	}
+	private boolean hasEnemy(Canvas canvas, double chance, int x, int y){
+		int chanceEnemy = (int)(Math.random()*(100-0));
+		int enemySelected = (int)(Math.random()*(2-0));
+		if (chanceEnemy >= chance) {
+			enemy[enemySelected].getObj().setPosition(x, y);
+			enemy[enemySelected].getObj().draw(canvas);
+			return true;
+		}
+		return false;
 	}
 	private void hasItem(Canvas canvas) {
 		for (int i = 0; i < item.length; i++) {
@@ -336,9 +376,15 @@ public class Main extends GraphicApplication implements MouseObserver {
 			}
 		}
 	}
+	private void enemyClicked(Point p) {
+		for (int i = 0; i < enemy.length; i++) {
+			if (enemy[i].getObj().clicked(p) && enemy[i].getLife() > 0) {
+			}
+		}
+	}
 	private void doorClicked(Point p) {
 		for (int i = 0; i < door.length; i++) {
-			if (door[i] != null && door[i].getObj().clicked(p)) {
+			if (door[i] != null && door[i].getObj().clicked(p) && !door[i].isEnemyAlive()) {
 				if (door[i].getLeadTo() == 0) {
 					Console.println("Você ganhou o jogo!");
 					System.exit(0);

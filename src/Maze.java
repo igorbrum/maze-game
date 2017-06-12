@@ -35,8 +35,9 @@ public class Maze {
 		r = room[i];
 		return r;
 	}
-	public Door createDoor(int number, GameObject obj){
+	public Door createDoor(int number, GameObject obj, double d){
 		Door door = new Door();
+		door.setChangeEnemy(d);
 		door.setLeadTo(number);
 		door.setObj(obj);
 		return door;
@@ -94,5 +95,15 @@ public class Maze {
 		weapon.setItemShow(show);
 		weapon.setObj(obj);
 		return weapon;
+	}
+	public Enemy createEnemy(String typeEnemy, GameObject obj){
+		Enemy enemy = new Enemy();
+		if (typeEnemy.toLowerCase().equals("goblin")) {
+			enemy.setLife(2);
+			enemy.setAccuracyHit(0.8);
+			enemy.setTypeEnemy("goblin");
+		}
+		enemy.setObj(obj);
+		return enemy;
 	}
 }
