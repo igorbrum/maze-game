@@ -112,16 +112,12 @@ public class Main extends GraphicApplication implements MouseObserver {
 	public void notify(MouseEvent evento, int b, Point p) {
 		//VERIFICACAO DO CLIQUE NA PORTA
 		doorClicked(p);
-		if (countItem >= 0 && countItem <= 2) {
-			//VERIFICACAO DO CLIQUE NA CHAVE
-			keyClicked(p);
-			//VERIFICACAO DO CLIQUE NA ARMADURA
-			armorClicked(p);
-			//VERIFICACAO DO CLIQUE NA ARMA
-			weaponClicked(p);
-		} else {
-			Console.println("Inventorio Cheio");
-		}
+		//VERIFICACAO DO CLIQUE NA CHAVE
+		keyClicked(p);
+		//VERIFICACAO DO CLIQUE NA ARMADURA
+		armorClicked(p);
+		//VERIFICACAO DO CLIQUE NA ARMA
+		weaponClicked(p);
 	}
 	// <-- CONFIGURACAO DO LABIRINTO -->
 	private void initialFiles() {
@@ -238,6 +234,9 @@ public class Main extends GraphicApplication implements MouseObserver {
 	}
 	private void hasArmor(Canvas canvas, int roomNumber) {
 		for (int i = 0; i < armor.length; i++) {
+			if (armor[i].getRoomNumber() == 0) {
+				armor[i].getObj().draw(canvas);
+			}
 			if (roomNumber == armor[i].getRoomNumber() && armor[i].isItemShow()) {
 				armor[i].getObj().draw(canvas);
 			}
@@ -245,12 +244,16 @@ public class Main extends GraphicApplication implements MouseObserver {
 	}
 	private Weapon randomWeapon(int i, String typeArmor) {
 		Weapon w = new Weapon();
+		//int randomRoomNumber = (int)(Math.random()*(31-1));
 		int randomRoomNumber = 10;
 		w = maze.createWeapon(randomRoomNumber, typeArmor, weaponObject[i], true);
 		return w;
 	}
 	private void hasWeapon(Canvas canvas, int roomNumber) {
 		for (int i = 0; i < weapon.length; i++) {
+			if (weapon[i].getRoomNumber() == 0) {
+				weapon[i].getObj().draw(canvas);
+			}
 			if (roomNumber == weapon[i].getRoomNumber() && weapon[i].isItemShow()) {
 				weapon[i].getObj().draw(canvas);
 			}
@@ -280,6 +283,7 @@ public class Main extends GraphicApplication implements MouseObserver {
 					armor[i].getObj().setPosition(60, 530);
 					countArmor++;
 					countItem++;
+					armor[i].setRoomNumber(0);
 					armor[i].setItemTaked(true);
 					redraw();
 				}
@@ -287,9 +291,18 @@ public class Main extends GraphicApplication implements MouseObserver {
 					armor[i].getObj().setPosition(150, 530);
 					countArmor++;
 					countItem++;
+					armor[i].setRoomNumber(0);
 					armor[i].setItemTaked(true);
 					redraw();
 				}
+			}
+			if (armor[i].getObj().clicked(p) && armor[i].isItemTaked()) {
+				armor[i].getObj().setPosition(200, 300);
+				countArmor--;
+				countItem--;
+				armor[i].setRoomNumber(room.getRoomNumber());
+				armor[i].setItemTaked(false);
+				redraw();
 			}
 		}
 	}
@@ -297,19 +310,29 @@ public class Main extends GraphicApplication implements MouseObserver {
 		for (int i = 0; i < weapon.length; i++) {
 			if (weapon[i].getObj().clicked(p) && !weapon[i].isItemTaked()) {
 				if (countItem == 0 && countWeapon == 0) {
-					weapon[i].getObj().setPosition(60, 530);
+					weapon[i].getObj().setPosition(55, 540);
 					countWeapon++;
 					countItem++;
+					weapon[i].setRoomNumber(0);
 					weapon[i].setItemTaked(true);
 					redraw();
 				}
 				if (countItem == 1 && countWeapon == 0) {
-					weapon[i].getObj().setPosition(100, 530);
+					weapon[i].getObj().setPosition(145, 540);
 					countWeapon++;
 					countItem++;
+					weapon[i].setRoomNumber(0);
 					weapon[i].setItemTaked(true);
 					redraw();
 				}
+			}
+			if (weapon[i].getObj().clicked(p) && weapon[i].isItemTaked()) {
+				weapon[i].getObj().setPosition(300, 300);
+				countWeapon--;
+				countItem--;
+				weapon[i].setRoomNumber(room.getRoomNumber());
+				weapon[i].setItemTaked(false);
+				redraw();
 			}
 		}
 	}
