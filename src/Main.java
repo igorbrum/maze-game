@@ -28,6 +28,7 @@ public class Main extends GraphicApplication implements MouseObserver {
 	private Room room;
 	private int countItem = 0;
 	private int countArmor = 0;
+	private int countWeapon;
 	
 	@Override
 	protected void setup() {
@@ -40,10 +41,10 @@ public class Main extends GraphicApplication implements MouseObserver {
 		typeArmor[1] = "chainMail";
 		typeArmor[2] = "mithrilMail";
 		
-		typeArmor[0] = "dagger";
-		typeArmor[1] = "knife";
-		typeArmor[2] = "shortsword";
-		typeArmor[3] = "longsword";
+		typeWeapon[0] = "dagger";
+		typeWeapon[1] = "knife";
+		typeWeapon[2] = "shortsword";
+		typeWeapon[3] = "longsword";
 		//ARQUIVOS INICIAIS DE CONFIGURACAO
 		initialFiles();
 		
@@ -101,6 +102,7 @@ public class Main extends GraphicApplication implements MouseObserver {
 		hasItem(canvas);
 		hasKey(canvas, roomNumber);
 		hasArmor(canvas, roomNumber);
+		hasWeapon(canvas, roomNumber);
 	}
 
 	@Override
@@ -115,6 +117,8 @@ public class Main extends GraphicApplication implements MouseObserver {
 			keyClicked(p);
 			//VERIFICACAO DO CLIQUE NA ARMADURA
 			armorClicked(p);
+			//VERIFICACAO DO CLIQUE NA ARMA
+			weaponClicked(p);
 		} else {
 			Console.println("Inventorio Cheio");
 		}
@@ -159,10 +163,10 @@ public class Main extends GraphicApplication implements MouseObserver {
 		armorObject[1] = GameObject.createObject(pathToArmorChainMail, 550, 250, Color.BLUE);
 		armorObject[2] = GameObject.createObject(pathToArmorMithril, 250, 250, Color.BLUE);
 		//CRIACAO DE SPRITES DAS ARMAS
-		weaponObject[0] = GameObject.createObject(pathToFileWeaponDagger, 300, 175, Color.RED);
-		weaponObject[1] = GameObject.createObject(pathToFileWeaponKnife, 380, 175, Color.BLUE);
-		weaponObject[2] = GameObject.createObject(pathToFileWeaponShortSword, 480, 175, Color.BLUE);
-		weaponObject[3] = GameObject.createObject(pathToFileWeaponLongSword, 580, 175, Color.BLUE);
+		weaponObject[0] = GameObject.createObject(pathToFileWeaponDagger, 280, 475, Color.RED);
+		weaponObject[1] = GameObject.createObject(pathToFileWeaponKnife, 350, 475, Color.BLUE);
+		weaponObject[2] = GameObject.createObject(pathToFileWeaponShortSword, 400, 475, Color.BLUE);
+		weaponObject[3] = GameObject.createObject(pathToFileWeaponLongSword, 450, 475, Color.BLUE);
 	}
 	private Image setBackgroundContainer(String pathToFile) {
 		try {
@@ -245,6 +249,13 @@ public class Main extends GraphicApplication implements MouseObserver {
 		w = maze.createWeapon(randomRoomNumber, typeArmor, weaponObject[i], true);
 		return w;
 	}
+	private void hasWeapon(Canvas canvas, int roomNumber) {
+		for (int i = 0; i < weapon.length; i++) {
+			if (roomNumber == weapon[i].getRoomNumber() && weapon[i].isItemShow()) {
+				weapon[i].getObj().draw(canvas);
+			}
+		}
+	}
 	private void hasItem(Canvas canvas) {
 		for (int i = 0; i < item.length; i++) {
 			if (item[i] != null) {
@@ -265,16 +276,38 @@ public class Main extends GraphicApplication implements MouseObserver {
 	private void armorClicked(Point p) {
 		for (int i = 0; i < armor.length; i++) {
 			if (armor[i].getObj().clicked(p) && !armor[i].isItemTaked()) {
-				armor[i].setItemTaked(true);
-				countItem++;
-				if (countItem == 1 && countArmor == 0) { //SLOT UM
+				if (countItem == 0 && countArmor == 0) { //SLOT UM
 					armor[i].getObj().setPosition(60, 530);
 					countArmor++;
+					countItem++;
+					armor[i].setItemTaked(true);
 					redraw();
 				}
-				if (countItem == 2 && countArmor == 0) { //SLOT DOIS
-					armor[i].getObj().setPosition(80, 530);
+				if (countItem == 1 && countArmor == 0) { //SLOT DOIS
+					armor[i].getObj().setPosition(150, 530);
 					countArmor++;
+					countItem++;
+					armor[i].setItemTaked(true);
+					redraw();
+				}
+			}
+		}
+	}
+	private void weaponClicked(Point p) {
+		for (int i = 0; i < weapon.length; i++) {
+			if (weapon[i].getObj().clicked(p) && !weapon[i].isItemTaked()) {
+				if (countItem == 0 && countWeapon == 0) {
+					weapon[i].getObj().setPosition(60, 530);
+					countWeapon++;
+					countItem++;
+					weapon[i].setItemTaked(true);
+					redraw();
+				}
+				if (countItem == 1 && countWeapon == 0) {
+					weapon[i].getObj().setPosition(100, 530);
+					countWeapon++;
+					countItem++;
+					weapon[i].setItemTaked(true);
 					redraw();
 				}
 			}
