@@ -2,13 +2,20 @@
 public class Creatures {
 	private double accuracyHit;
 	private int life;
+	private int damage;
 	private GameObject obj;
-	private boolean showEnemy;
-	public boolean isShowEnemy() {
-		return showEnemy;
+	private boolean show;
+	public int getDamage() {
+		return damage;
 	}
-	public void setShowEnemy(boolean showEnemy) {
-		this.showEnemy = showEnemy;
+	public void setDamage(int damage) {
+		this.damage = damage;
+	}	
+	public boolean isShow() {
+		return show;
+	}
+	public void setShow(boolean showCreature) {
+		this.show = showCreature;
 	}
 	public double getAccuracyHit() {
 		return accuracyHit;

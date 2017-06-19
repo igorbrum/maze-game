@@ -101,7 +101,23 @@ public class Maze {
 		if (typeEnemy.toLowerCase().equals("goblin")) {
 			enemy.setLife(2);
 			enemy.setAccuracyHit(0.8);
+			enemy.setDamage(2);
 			enemy.setTypeEnemy("goblin");
+			enemy.setShow(true);
+		}
+		if (typeEnemy.toLowerCase().equals("orc")) {
+			enemy.setLife(5);
+			enemy.setAccuracyHit(0.75);
+			enemy.setDamage(4);
+			enemy.setTypeEnemy("orc");
+			enemy.setShow(true);
+		}
+		if (typeEnemy.toLowerCase().equals("troll")) {
+			enemy.setLife(10);
+			enemy.setAccuracyHit(0.5);
+			enemy.setDamage(6);
+			enemy.setTypeEnemy("troll");
+			enemy.setShow(true);
 		}
 		enemy.setObj(obj);
 		return enemy;

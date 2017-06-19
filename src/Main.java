@@ -129,8 +129,6 @@ public class Main extends GraphicApplication implements MouseObserver {
 		armorClicked(p);
 		//VERIFICACAO DO CLIQUE NA ARMA
 		weaponClicked(p);
-		
-		enemyClicked(p);
 	}
 	
 	// <-- CONFIGURACAO DO LABIRINTO -->
@@ -201,54 +199,36 @@ public class Main extends GraphicApplication implements MouseObserver {
 		if (room.getNorthNumber() >= 0) {
 			door[i] = maze.createDoor(room.getNorthNumber(), doorObject[i], 0.10);
 			door[i].getObj().draw(canvas);
-			if (hasEnemy(canvas, door[i].getChangeEnemy(), (int)door[i].getObj().getPosition().x, (int)door[i].getObj().getPosition().y)) {
-				door[i].setEnemyAlive(true);
-			}
 		}
 	}
 	private void hasSouthDoor(Canvas canvas, int i){
 		if (room.getSouthNumber() >= 0) {
 			door[i] = maze.createDoor(room.getSouthNumber(), doorObject[i], 10);
 			door[i].getObj().draw(canvas);
-			if (hasEnemy(canvas, door[i].getChangeEnemy(), (int)door[i].getObj().getPosition().x, (int)door[i].getObj().getPosition().y)) {
-				door[i].setEnemyAlive(true);
-			}
 		}
 	}
 	private void hasEastDoor(Canvas canvas, int i){
 		if (room.getEastNumber() >= 0) {
 			door[i] = maze.createDoor(room.getEastNumber(), doorObject[i], 10);
 			door[i].getObj().draw(canvas);
-			if (hasEnemy(canvas, door[i].getChangeEnemy(), (int)door[i].getObj().getPosition().x, (int)door[i].getObj().getPosition().y)) {
-				door[i].setEnemyAlive(true);
-			}
 		}
 	}
 	private void hasWestDoor(Canvas canvas, int i){
 		if (room.getWestNumber() >= 0) {
 			door[i] = maze.createDoor(room.getWestNumber(), doorObject[i], 10);
 			door[i].getObj().draw(canvas);
-			if (hasEnemy(canvas, door[i].getChangeEnemy(), (int)door[i].getObj().getPosition().x, (int)door[i].getObj().getPosition().y)) {
-				door[i].setEnemyAlive(true);
-			}
 		}
 	}
 	private void hasUpDoor(Canvas canvas, int i){
 		if (room.getUpNumber() >= 0) {
 			door[i] = maze.createDoor(room.getUpNumber(), doorObject[i], 10);
 			door[i].getObj().draw(canvas);
-			if (hasEnemy(canvas, door[i].getChangeEnemy(), (int)door[i].getObj().getPosition().x, (int)door[i].getObj().getPosition().y)) {
-				door[i].setEnemyAlive(true);
-			}
 		}
 	}
 	private void hasDownDoor(Canvas canvas, int i){
 		if (room.getDownNumber() >= 0) {
 			door[i] = maze.createDoor(room.getDownNumber(), doorObject[i], 10);
 			door[i].getObj().draw(canvas);
-			if (hasEnemy(canvas, door[i].getChangeEnemy(), (int)door[i].getObj().getPosition().x, (int)door[i].getObj().getPosition().y)) {
-				door[i].setEnemyAlive(true);
-			}
 		}
 	}
 	private Key randomKeys(int i) {
@@ -260,6 +240,9 @@ public class Main extends GraphicApplication implements MouseObserver {
 	}
 	private void hasKey(Canvas canvas, int roomNumber) {
 		for (int i = 0; i < key.length; i++) {
+			if (key[i].getRoomNumber() == 0) {
+				key[i].getObj().draw(canvas);
+			}
 			if (roomNumber == key[i].getRoomNumber() && key[i].isItemShow()) {
 				key[i].getObj().draw(canvas);
 			}
@@ -302,17 +285,6 @@ public class Main extends GraphicApplication implements MouseObserver {
 		e = maze.createEnemy(string, enemyObject[i]);
 		return e;
 	}
-	private boolean hasEnemy(Canvas canvas, double chance, int x, int y){
-		int chanceEnemy = (int)(Math.random()*(100-0));
-		Console.println("Chance enemy:", chanceEnemy);
-		int enemySelected = (int)(Math.random()*(2-0));
-		if (chance >= chanceEnemy) {
-			enemy[enemySelected].getObj().setPosition(x, y);
-			enemy[enemySelected].getObj().draw(canvas);
-			return true;
-		}
-		return false;
-	}
 	private void hasItem(Canvas canvas) {
 		for (int i = 0; i < item.length; i++) {
 			if (item[i] != null) {
@@ -320,79 +292,85 @@ public class Main extends GraphicApplication implements MouseObserver {
 			}
 		}
 	}
+	private boolean inventorySlotOne(Object obj, int i){
+		Class<? extends Object> str = obj.getClass();
+		if (str == key[i].getClass()) {
+			if (countItem == 0) {
+				key[i].getObj().setPosition(60, 530);
+				return true;
+			}
+		}
+		if (str == armor[i].getClass()) {
+			if (countItem == 0 && countArmor == 0) {
+				armor[i].getObj().setPosition(60, 530);
+				return true;
+			}
+		}
+		if (str == weapon[i].getClass()) {
+			if (countItem == 0 && countWeapon == 0) {
+				weapon[i].getObj().setPosition(60, 530);
+				return true;
+			}
+		}
+		return false;
+	}
+	private boolean inventorySlotTwo(Object obj, int i){
+		Class<? extends Object> str = obj.getClass();
+		if (countItem == 1) {
+			if (str == key[i].getClass()) {
+				key[i].getObj().setPosition(150, 530);
+				return true;
+			}
+			if (str == armor[i].getClass()) {
+				if (countArmor == 0) {
+					armor[i].getObj().setPosition(150, 530);
+					return true;
+				}
+			}
+			if (str == weapon[i].getClass()) {
+				if (countWeapon == 0) {
+					weapon[i].getObj().setPosition(150, 530);
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 	private void keyClicked(Point p) {
 		for (int i = 0; i < key.length; i++) {
-			if (key[i].getObj().clicked(p) && key[i].isItemShow()) {
-				key[i].setItemShow(false);
-				key[i].setItemTaked(false);
-				countItem++;
-				redraw();
+			if (key[i].getObj().clicked(p) && !key[i].isItemTaked()) {
+				if (inventorySlotOne(key[i], i) || inventorySlotTwo(key[i], i)) {
+					key[i].setItemTaked(true);
+					key[i].setRoomNumber(0);
+					countItem++;
+					redraw();
+				}
 			}
 		}
 	}
 	private void armorClicked(Point p) {
 		for (int i = 0; i < armor.length; i++) {
 			if (armor[i].getObj().clicked(p) && !armor[i].isItemTaked()) {
-				if (countItem == 0 && countArmor == 0) { //SLOT UM
-					armor[i].getObj().setPosition(60, 530);
+				if (inventorySlotOne(armor[i], i) || inventorySlotTwo(armor[i], i)) {
+					armor[i].setItemTaked(true);
+					armor[i].setRoomNumber(0);
 					countArmor++;
 					countItem++;
-					armor[i].setRoomNumber(0);
-					armor[i].setItemTaked(true);
 					redraw();
 				}
-				if (countItem == 1 && countArmor == 0) { //SLOT DOIS
-					armor[i].getObj().setPosition(150, 530);
-					countArmor++;
-					countItem++;
-					armor[i].setRoomNumber(0);
-					armor[i].setItemTaked(true);
-					redraw();
-				}
-			}
-			if (armor[i].getObj().clicked(p) && armor[i].isItemTaked()) {
-				armor[i].getObj().setPosition(200, 300);
-				countArmor--;
-				countItem--;
-				armor[i].setRoomNumber(room.getRoomNumber());
-				armor[i].setItemTaked(false);
-				redraw();
 			}
 		}
 	}
 	private void weaponClicked(Point p) {
 		for (int i = 0; i < weapon.length; i++) {
 			if (weapon[i].getObj().clicked(p) && !weapon[i].isItemTaked()) {
-				if (countItem == 0 && countWeapon == 0) {
-					weapon[i].getObj().setPosition(55, 540);
+				if (inventorySlotOne(weapon[i], i) || inventorySlotTwo(weapon[i], i)) {
+					weapon[i].setItemTaked(true);
+					weapon[i].setRoomNumber(0);
 					countWeapon++;
 					countItem++;
-					weapon[i].setRoomNumber(0);
-					weapon[i].setItemTaked(true);
 					redraw();
 				}
-				if (countItem == 1 && countWeapon == 0) {
-					weapon[i].getObj().setPosition(145, 540);
-					countWeapon++;
-					countItem++;
-					weapon[i].setRoomNumber(0);
-					weapon[i].setItemTaked(true);
-					redraw();
-				}
-			}
-			if (weapon[i].getObj().clicked(p) && weapon[i].isItemTaked()) {
-				weapon[i].getObj().setPosition(300, 300);
-				countWeapon--;
-				countItem--;
-				weapon[i].setRoomNumber(room.getRoomNumber());
-				weapon[i].setItemTaked(false);
-				redraw();
-			}
-		}
-	}
-	private void enemyClicked(Point p) {
-		for (int i = 0; i < enemy.length; i++) {
-			if (enemy[i].getObj().clicked(p) && enemy[i].getLife() > 0) {
 			}
 		}
 	}
