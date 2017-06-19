@@ -26,6 +26,7 @@ public class Main extends GraphicApplication implements MouseObserver {
 	private Armor armor[] = new Armor[3];
 	private Weapon weapon[] = new Weapon[4];
 	private Enemy enemy[] = new Enemy[3];
+	private String typeEnemy[] = new String [3];
 	private GameObject heroObject;
 	private Maze maze;
 	private Room room;
@@ -41,7 +42,6 @@ public class Main extends GraphicApplication implements MouseObserver {
 		room = new Room();
 		String typeArmor[] = new String [3];
 		String typeWeapon[] = new String [4];
-		String typeEnemy[] = new String [3];
 		
 		typeArmor[0] = "leatherMail";
 		typeArmor[1] = "chainMail";
@@ -82,7 +82,6 @@ public class Main extends GraphicApplication implements MouseObserver {
 		for (int i = 0; i < weapon.length; i++) {
 			weapon[i] = randomWeapon(i, typeWeapon[i]);
 		}
-		//CRIACAO DOS INIMIGOS
 		for (int i = 0; i < enemy.length; i++) {
 			enemy[i] = randomEnemy(i, typeEnemy[i]);
 		}
@@ -109,6 +108,7 @@ public class Main extends GraphicApplication implements MouseObserver {
 		canvas.putText(620, 520, 17, "Damage: "+hero.getDamage());
 		canvas.putText(620, 540, 17, "Armor Class: "+hero.getArmorClass());
 		canvas.putText(620, 560, 17, "Change to Hit: "+hero.getAccuracyHit()*100+"%");
+		canvas.putText(620, 580, 17, "Hit Points: "+hero.getLife());
 		
 		//DESENHA PORTAS QUANDO A CONFIGURACAO DA SALA PERMITE ISSO
 		hasNorthDoor(canvas, 0);
@@ -135,6 +135,7 @@ public class Main extends GraphicApplication implements MouseObserver {
 		armorClicked(p);
 		//VERIFICACAO DO CLIQUE NA ARMA
 		weaponClicked(p);
+		enemyClicked(p);
 	}
 	
 	// <-- CONFIGURACAO DO LABIRINTO -->
@@ -203,8 +204,9 @@ public class Main extends GraphicApplication implements MouseObserver {
 	// <-- LOGICA DO LABIRINTO -->
 	private void hasNorthDoor(Canvas canvas, int i){
 		if (room.getNorthNumber() >= 0) {
-			door[i] = maze.createDoor(room.getNorthNumber(), doorObject[i], 0.10);
+			door[i] = maze.createDoor(room.getNorthNumber(), doorObject[i], 90);
 			door[i].getObj().draw(canvas);
+			hasEnemy(canvas, i);
 		}
 	}
 	private void hasSouthDoor(Canvas canvas, int i){
@@ -290,6 +292,15 @@ public class Main extends GraphicApplication implements MouseObserver {
 		Enemy e = new Enemy();
 		e = maze.createEnemy(string, enemyObject[i]);
 		return e;
+	}
+	private void hasEnemy(Canvas canvas, int i) {
+		double rand = (Math.random()*(100-0));
+		int randEnemy = (int)(Math.random()*(3-0));
+		if (door[i].getChangeEnemy() >= rand) {
+			door[i].setEnemyAlive(true);
+			enemy[randEnemy].getObj().setPosition(door[i].getObj().getBounds().x, door[i].getObj().getBounds().y);
+			enemy[randEnemy].getObj().draw(canvas);
+		}
 	}
 	private void hasItem(Canvas canvas) {
 		for (int i = 0; i < item.length; i++) {
@@ -454,6 +465,16 @@ public class Main extends GraphicApplication implements MouseObserver {
 					room = maze.callNextRoom(door[i].getLeadTo());
 					redraw();
 				}
+			}
+		}
+	}
+	private void enemyClicked(Point p) { 
+		for (int i = 0; i < enemy.length; i++) {
+			if (enemy[i].getObj().clicked(p) && enemy[i].getLife() > 0) {
+				int hpEnemy = enemy[i].getLife();
+				int hpHero = hero.getLife();
+				enemy[i].setLife(hpEnemy - hero.getDamage());
+				hero.setLife(hpHero - enemy[i].getDamage());
 			}
 		}
 	}
