@@ -122,4 +122,8 @@ public class Maze {
 		enemy.setObj(obj);
 		return enemy;
 	}
+	public Hero createHero(){
+		Hero hero = new Hero();
+		return hero;
+	}
 }

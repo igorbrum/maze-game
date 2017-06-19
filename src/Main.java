@@ -29,6 +29,7 @@ public class Main extends GraphicApplication implements MouseObserver {
 	private GameObject heroObject;
 	private Maze maze;
 	private Room room;
+	private Hero hero;
 	private int countItem = 0;
 	private int countArmor = 0;
 	private int countWeapon;
@@ -67,6 +68,8 @@ public class Main extends GraphicApplication implements MouseObserver {
 		//CRIA OS OBJETOS DO LABIRINTO
 		createObjects();
 		
+		hero = maze.createHero();
+		
 		//POSICAO ALEATORIA INICIAL DAS CHAVES 
 		for (int i = 0; i < key.length; i++) {
 			key[i] = randomKeys(i);
@@ -102,7 +105,10 @@ public class Main extends GraphicApplication implements MouseObserver {
 		canvas.drawImage(background, 0, 0);
 		canvas.drawImage(backgroundContainer, 25, 528);
 		heroObject.draw(canvas);
-		canvas.putText(10, 0, 30, "Sala Numero: "+roomNumber);
+		canvas.putText(620, 500, 17, "Room Number: "+roomNumber);
+		canvas.putText(620, 520, 17, "Damage: "+hero.getDamage());
+		canvas.putText(620, 540, 17, "Armor Class: "+hero.getArmorClass());
+		canvas.putText(620, 560, 17, "Change to Hit: "+hero.getAccuracyHit()*100+"%");
 		
 		//DESENHA PORTAS QUANDO A CONFIGURACAO DA SALA PERMITE ISSO
 		hasNorthDoor(canvas, 0);
@@ -316,23 +322,53 @@ public class Main extends GraphicApplication implements MouseObserver {
 	}
 	private boolean inventorySlotTwo(Object obj, int i){
 		Class<? extends Object> str = obj.getClass();
-		if (countItem == 1) {
-			if (str == key[i].getClass()) {
-				key[i].getObj().setPosition(150, 530);
+		if (str == key[i].getClass()) {
+			key[i].getObj().setPosition(150, 530);
+			return true;
+		}
+		if (str == armor[i].getClass()) {
+			if (countItem == 1 && countArmor == 0) {
+				armor[i].getObj().setPosition(150, 530);
 				return true;
 			}
-			if (str == armor[i].getClass()) {
-				if (countArmor == 0) {
-					armor[i].getObj().setPosition(150, 530);
-					return true;
-				}
+		}
+		if (str == weapon[i].getClass()) {
+			if (countItem == 1 && countWeapon == 0) {
+				weapon[i].getObj().setPosition(150, 530);
+				return true;
 			}
-			if (str == weapon[i].getClass()) {
-				if (countWeapon == 0) {
-					weapon[i].getObj().setPosition(150, 530);
-					return true;
-				}
-			}
+		}
+		return false;
+	}
+	private boolean dropItemInventorySlotOne(Object obj, int i) {
+		Class<? extends Object> str = obj.getClass();
+		if (str == key[i].getClass()) {
+			key[i].getObj().setPosition(400, 100);
+			return true;
+		}
+		if (str == armor[i].getClass()) {
+			armor[i].getObj().setPosition(400, 100);
+			return true;
+		}
+		if (str == weapon[i].getClass()) {
+			weapon[i].getObj().setPosition(400, 100);
+			return true;
+		}
+		return false;
+	}
+	private boolean dropItemInventorySlotTwo(Object obj, int i) {
+		Class<? extends Object> str = obj.getClass();
+		if (str == key[i].getClass()) {
+			key[i].getObj().setPosition(300, 100);
+			return true;
+		}
+		if (str == armor[i].getClass()) {
+			armor[i].getObj().setPosition(300, 100);
+			return true;
+		}
+		if (str == weapon[i].getClass()) {
+			weapon[i].getObj().setPosition(300, 100);
+			return true;
 		}
 		return false;
 	}
@@ -346,16 +382,37 @@ public class Main extends GraphicApplication implements MouseObserver {
 					redraw();
 				}
 			}
+			if (key[i].getObj().clicked(p) && key[i].isItemTaked()) {
+				if (dropItemInventorySlotOne(key[i], i) || dropItemInventorySlotTwo(key[i], i)) {
+					key[i].setItemTaked(false);
+					key[i].setRoomNumber(room.getRoomNumber());
+					countItem--;
+					redraw();
+				}
+			}
 		}
 	}
 	private void armorClicked(Point p) {
 		for (int i = 0; i < armor.length; i++) {
 			if (armor[i].getObj().clicked(p) && !armor[i].isItemTaked()) {
 				if (inventorySlotOne(armor[i], i) || inventorySlotTwo(armor[i], i)) {
+					hero.setArmorClass(armor[i].getArmorClass());
 					armor[i].setItemTaked(true);
 					armor[i].setRoomNumber(0);
 					countArmor++;
 					countItem++;
+					redraw();
+				}
+			}
+			if (armor[i].getObj().clicked(p) && armor[i].isItemTaked()) {
+				if (dropItemInventorySlotOne(armor[i], i) || dropItemInventorySlotOne(armor[i], i)) {
+					int ac;
+					ac = hero.getArmorClass() - armor[i].getArmorClass();
+					hero.setArmorClass(ac);
+					armor[i].setItemTaked(false);
+					armor[i].setRoomNumber(room.getRoomNumber());
+					countItem--;
+					countArmor--;
 					redraw();
 				}
 			}
@@ -365,10 +422,23 @@ public class Main extends GraphicApplication implements MouseObserver {
 		for (int i = 0; i < weapon.length; i++) {
 			if (weapon[i].getObj().clicked(p) && !weapon[i].isItemTaked()) {
 				if (inventorySlotOne(weapon[i], i) || inventorySlotTwo(weapon[i], i)) {
+					hero.setDamage(hero.getDamage() + weapon[i].getDamageWeapon());
 					weapon[i].setItemTaked(true);
 					weapon[i].setRoomNumber(0);
 					countWeapon++;
 					countItem++;
+					redraw();
+				}
+			}
+			if (weapon[i].getObj().clicked(p) && weapon[i].isItemTaked()) {
+				if (dropItemInventorySlotOne(weapon[i], i) || dropItemInventorySlotOne(weapon[i], i)) {
+					int damage;
+					damage = hero.getDamage() - weapon[i].getDamageWeapon();
+					hero.setDamage(damage);
+					weapon[i].setItemTaked(false);
+					weapon[i].setRoomNumber(room.getRoomNumber());
+					countItem--;
+					countWeapon--;
 					redraw();
 				}
 			}
